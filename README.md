@@ -23,12 +23,13 @@ $ sudo ./Install
 ## 使用
 
 ```
+$ sudo systemctl start pcscd
 $ sudo systemctl start NHIICC
 ```
 
 ## 檢驗
 
-沒有錯誤應該會在 7777 port 開啟 WebSocket Server
+沒有錯誤應該會在 7777 port 開啟 Socket Server
 
 ```
 $ sudo netstat -tlnp
@@ -38,7 +39,15 @@ Proto Recv-Q Send-Q Local Address           Foreign Address         State       
 tcp        0      0 0.0.0.0:7777            0.0.0.0:*               LISTEN      46811/mLNHIICC
 ```
 
-使用瀏覽器開啟 `file:///usr/local/share/NHIICC/html/ESample.html`
+使用 pcsclite 檢驗
+
+```
+$ pcsc_scan
+...
+        National Health Insurance Card, Taiwan
+```
+
+使用瀏覽器開啟 `file:///usr/local/share/NHIICC/html/ESample.html` 檢驗
 
 ![](https://i.imgur.com/9k6KBan.png)
 
