@@ -1,0 +1,11 @@
+[Unit]
+Description=NHIICC
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/share/NHIICC
+ExecStart=/usr/local/share/NHIICC/mLNHIICC
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

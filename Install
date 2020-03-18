@@ -1,6 +1,5 @@
 #!/bin/bash
 
-sudo killall mLNHIICC;
 if [ ! -e "/usr/local/share/NHIICC/mLNHIICC" ] ; then
     sudo mkdir -p /usr/local/share/NHIICC ;
     sudo chmod 755 /usr/local/share/NHIICC ;
@@ -88,7 +87,17 @@ if [ -f /etc/debian_version ]; then
 
     fi
 
+elif [ -f /etc/arch-release ]; then
+    which pacman && {
+       pacman --needed -S glibc pcsclite openssl ca-certificates
+    }
 
+    update-ca-trust force-enable
+    cp ./cert/NHIServerCert.crt /etc/ca-certificates/trust-source/anchors/
+    update-ca-trust extract
+
+    cp ./NHIICC.service /usr/local/share/NHIICC/;
+    ln -sf /usr/local/share/NHIICC/NHIICC.service /etc/systemd/system/NHIICC.service
 
 else
     #DISTRO=$(uname -s)
