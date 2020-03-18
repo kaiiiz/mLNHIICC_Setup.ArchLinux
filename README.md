@@ -16,6 +16,7 @@
 
 ```
 $ git clone https://github.com/kaiiiz/mLNHIICC_Setup.ArchLinux.git
+$ cd mLNHIICC_Setup.ArchLinux
 $ sudo ./Install
 ```
 
@@ -27,7 +28,7 @@ $ sudo systemctl start NHIICC
 
 ## 檢驗
 
-沒有錯誤應該會在 7777 port 開啟 websocket
+沒有錯誤應該會在 7777 port 開啟 WebSocket Server
 
 ```
 $ sudo netstat -tlnp
