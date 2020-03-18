@@ -1,0 +1,128 @@
+#!/bin/bash
+
+sudo killall mLNHIICC;
+if [ ! -e "/usr/local/share/NHIICC/mLNHIICC" ] ; then
+    sudo mkdir -p /usr/local/share/NHIICC ;
+    sudo chmod 755 /usr/local/share/NHIICC ;
+    case $(uname -m) in
+    x86_64)
+        sudo cp ./x64/mLNHIICC /usr/local/share/NHIICC/mLNHIICC ;
+        if [ -f /etc/redhat-release ]; then
+            sudo cp ./x64/RH/mLNHIICC /usr/local/share/NHIICC/mLNHIICC ;
+        fi 
+        echo "x86_64"
+        ;;
+    i*86)
+        sudo cp ./x32/mLNHIICC /usr/local/share/NHIICC/mLNHIICC ;
+        echo "32 bit versioni"
+        ;;
+    *)
+        echo "unknow OS bits , Sorry! No support! ";
+        exit 0
+        ;;
+    esac
+
+  #cp ./ReStart_NHIICC.sh /usr/local/share/NHIICC/ReStart_NHIICC.sh ;
+    sudo chmod 755 /usr/local/share/NHIICC/mLNHIICC ;
+    sudo cp -R ./html /usr/local/share/NHIICC ;
+    sudo cp -R ./cert /usr/local/share/NHIICC ;
+#     grep -q localhost /etc/hosts | grep -q 127.0.0.1;
+#    if [ ! $? -eq 0 ]
+#    then
+#        sudo -- sh -c "echo  \ \ >> /etc/hosts";sudo -- sh -c "echo 127.0.0.1 localhost >> /etc/hosts"
+#    fi
+    grep -q iccert.nhi.gov.tw /etc/hosts | grep -q 127.0.0.1;
+    if [ ! $? -eq 0 ]
+    then
+        sudo -- sh -c "echo  \ \ >> /etc/hosts";sudo -- sh -c "echo 127.0.0.1 iccert.nhi.gov.tw >> /etc/hosts"
+    fi
+
+certfile="./cert/NHIRootCA.crt"
+certname="NHI SelfRoot CA"
+certfile2="./cert/NHIServerCert.crt"
+certname2="NHI Self Sign Server"
+
+for certDB in $(find ~/ -name "cert8.db")
+do
+    certdir=$(dirname ${certDB});
+    sudo certutil -A -n "${certname}" -t "TCu,Cu,Tu" -i ${certfile} -d dbm:${certdir}
+    sudo certutil -A -n "${certname2}" -t "P,," -i ${certfile2} -d dbm:${certdir}
+done
+
+for certDB in $(find ~/ -name "cert9.db")
+do
+    certdir=$(dirname ${certDB});
+    sudo certutil -A -n "${certname}" -t "TCu,Cu,Tu" -i ${certfile} -d sql:${certdir}
+    sudo certutil -A -n "${certname2}" -t "P,," -i ${certfile2} -d sql:${certdir}
+done
+
+fi
+
+if [ -f /etc/debian_version ]; then
+    #DISTRO=Debian
+    # XXX or Ubuntu
+
+	sudo apt-get install -y libc6 
+	sudo apt-get install -y openssl
+	sudo apt-get install -y pcscd
+	sudo apt-get install -y libnss3-tools
+	sudo apt-get install -y libssl1.0.0 libssl-dev --reinstall
+	sudo apt-get install -y ca-certificates
+
+    if [ -f /etc/init.d/NHIICC.sh ]; then
+
+        sudo chmod +x /etc/init.d/NHIICC.sh
+        sudo unlink /etc/rc5.d/S50NHIICC.sh
+        sudo ln -s /etc/init.d/NHIICC.sh /etc/rc5.d/S50NHIICC.sh
+
+    else
+        sudo  sh -c "echo '#!/bin/bash' >> /etc/init.d/NHIICC.sh"
+        sudo  sh -c "echo '#' >> /etc/init.d/NHIICC.sh"
+        sudo  sh -c "echo '#' >> /etc/init.d/NHIICC.sh"
+        sudo  sh -c "echo '/usr/local/share/NHIICC/mLNHIICC &' >> /etc/init.d/NHIICC.sh"
+        sudo  sh -c "echo '#' >> /etc/init.d/NHIICC.sh"
+
+        sudo chmod +x /etc/init.d/NHIICC.sh
+        sudo unlink /etc/rc5.d/S50NHIICC.sh
+        sudo ln -s /etc/init.d/NHIICC.sh /etc/rc5.d/S50NHIICC.sh
+
+    fi
+
+
+
+else
+    #DISTRO=$(uname -s)
+
+     which yum && { 
+#	     echo centos ubuntu;  
+        sudo yum -y install glibc 
+        sudo yum -y install pcsc-lite
+        sudo yum -y install compat-openssl10
+        sudo yum -y install ca-certificates
+     }
+#     which zypper && { echo opensuse;  }
+#     which apt-get && { echo debian;  }
+#cat /etc/*version
+#cat /proc/version #linprocfs/version for FreeBSD when "linux" enabled
+#cat /etc/*release
+#uname -rv
+        sudo update-ca-trust force-enable
+        sudo cp ./cert/NHIServerCert.crt /etc/pki/ca-trust/source/anchors/
+        sudo update-ca-trust extract
+    if [ -f /etc/rc.local ]; then	
+        if cat /etc/rc.local | grep -q "mLNHIICC";
+            then echo "found rc"
+        else 
+            sed -i -e '$i /usr/local/share/NHIICC/mLNHIICC &\n' /etc/rc.local
+        fi
+    else
+        sudo cp NHIICC.sh /etc/init.d/NHIICC.sh;
+        sudo chmod +x /etc/init.d/NHIICC.sh;
+        sudo unlink /etc/rc5.d/S50NHIICC.sh
+        sudo ln -s /etc/init.d/NHIICC.sh /etc/rc5.d/S50NHIICC.sh;
+    fi 
+
+fi
+
+  sudo /usr/local/share/NHIICC/mLNHIICC & 
+  

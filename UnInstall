@@ -1,0 +1,39 @@
+#!/bin/bash
+sudo killall mLNHIICC;
+grep -q iccert.nhi.gov.tw /etc/hosts;
+if [ $? -eq 0 ] ; then
+    sudo sed -i '/iccert\.nhi\.gov\.tw/d' /etc/hosts
+fi
+
+if [ -f /etc/debian_version ]; then
+    sudo rm /etc/init.d/NHIICC.sh /etc/rc5.d/S50NHIICC.sh
+elif [ -f /etc/rc.local ]; then
+    sudo sed -i '/mLNHIICC/d' /etc/rc.local
+elif [ -f /etc/init.d/NHIICC.sh ]; then
+    sudo rm /etc/init.d/NHIICC.sh /etc/rc5.d/S50NHIICC.sh
+else
+     echo ""
+fi
+
+if [ -d /usr/local/share/NHIICC ]; then
+    sudo rm -R /usr/local/share/NHIICC
+fi
+
+certfile="./cert/NHIRootCA.crt"
+certname="NHI Self Root CA"
+certfile2="./cert/NHIServerCert.crt"
+certname2="NHI Self Sign Server"
+
+for certDB in $(find ~/ -name "cert8.db")
+do
+    certdir=$(dirname ${certDB});
+    sudo certutil -D -n "${certname}" -d dbm:${certdir}
+    sudo certutil -D -n "${certname2}" -d dbm:${certdir}
+done
+
+for certDB in $(find ~/ -name "cert9.db")
+do
+    certdir=$(dirname ${certDB});
+    sudo certutil -D -n "${certname}" -d sql:${certdir}
+    sudo certutil -D -n "${certname2}" -d sql:${certdir}
+done
