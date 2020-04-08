@@ -27,6 +27,10 @@ $ sudo systemctl start pcscd
 $ sudo systemctl start NHIICC
 ```
 
+第一次使用需要使用瀏覽器打開 `localhost:7777` 並點選信任，會出現：
+
+![](https://i.imgur.com/2njJeUH.png)
+
 ## 檢驗
 
 沒有錯誤應該會在 7777 port 開啟 Socket Server
