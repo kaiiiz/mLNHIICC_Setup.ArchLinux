@@ -50,7 +50,7 @@ fi
 
 if [ -f /etc/arch-release ]; then
     which pacman && {
-       pacman --needed -S glibc pcsclite openssl ca-certificates
+       pacman --needed -S glibc pcsclite openssl-1.0 ca-certificates
     }
 
     update-ca-trust force-enable
