@@ -1,3 +1,5 @@
+已有熱心的人將相關程式包成套件放至 AUR 上，詳細請參考 https://aur.archlinux.org/packages/nhiicc ，本專案將停止維護，未來更新請以 AUR 上的套件為主
+
 # 健保卡網路服務元件 for Arch Linux
 
 修改自 https://cloudicweb.nhi.gov.tw/cloudic/system/SMC/mEventesting.htm 之 Linux(Ubuntu) 版本
